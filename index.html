@@ -1,1 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Price Hunter - Multi-Site Search Tool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            color: #2563eb;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .search-section {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .search-input {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            outline: none;
+        }
+        
+        .search-input:focus {
+            border-color: #2563eb;
+        }
+        
+        .retailer-selection {
+            margin-bottom: 25px;
+        }
+        
+        .retailer-selection h3 {
+            color: #374151;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .retailers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .retailer-checkbox {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: #f9fafb;
+        }
+        
+        .retailer-checkbox:hover {
+            border-color: #2563eb;
+            background: #eff6ff;
+        }
+        
+        .retailer-checkbox.selected {
+            border-color: #2563eb;
+            background: #dbeafe;
+        }
+        
+        .retailer-checkbox input {
+            margin-right: 10px;
+            transform: scale(1.2);
+        }
+        
+        .retailer-checkbox label {
+            cursor: pointer;
+            font-weight: 500;
+            color: #374151;
+        }
+        
+        .select-all-btn {
+            display: block;
+            margin: 15px auto 25px;
+            padding: 8px 16px;
+            background: #6b7280;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .select-all-btn:hover {
+            background: #4b5563;
+        }
+        
+        .search-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .search-btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            min-width: 200px;
+        }
+        
+        .search-selected {
+            background: #2563eb;
+            color: white;
+        }
+        
+        .search-selected:hover {
+            background: #1d4ed8;
+        }
+        
+        .search-selected:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .search-all {
+            background: #059669;
+            color: white;
+        }
+        
+        .search-all:hover {
+            background: #047857;
+        }
+        
+        .examples {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .example-btn {
+            background: #f3f4f6;
+            border: 1px solid #d1d5db;
+            padding: 8px 16px;
+            margin: 5px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .example-btn:hover {
+            background: #e5e7eb;
+        }
+        
+        .how-to-section {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        
+        .how-to-section h2 {
+            color: #374151;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .how-to-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .step {
+            padding: 20px;
+            border-left: 4px solid #2563eb;
+            background: #f8fafc;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .step-number {
+            background: #2563eb;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .step h4 {
+            color: #374151;
+            margin-bottom: 8px;
+        }
+        
+        .step p {
+            color: #6b7280;
+            font-size: 14px;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #2563eb;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .error {
+            background: #fee2e2;
+            color: #dc2626;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #fecaca;
+            text-align: center;
+        }
+        
+        .success {
+            background: #dcfce7;
+            color: #166534;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #bbf7d0;
+            text-align: center;
+        }
+        
+        .results-section {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        
+        .results-section h3 {
+            color: #374151;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .opened-tabs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .tab-card {
+            padding: 15px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            text-align: center;
+            background: #f9fafb;
+        }
+        
+        .tab-card.opened {
+            border-color: #059669;
+            background: #ecfdf5;
+        }
+        
+        .tab-card .retailer-name {
+            font-weight: bold;
+            color: #374151;
+            margin-bottom: 5px;
+        }
+        
+        .tab-card .status {
+            font-size: 12px;
+            color: #6b7280;
+        }
+        
+        .tab-card.opened .status {
+            color: #059669;
+        }
+        
+        @media (max-width: 768px) {
+            .search-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .search-btn {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🛒 Price Hunter</h1>
+            <p>Search for products across multiple retailers instantly</p>
+        </div>
+        
+        <div class="how-to-section">
+            <h2>📖 How to Use Price Hunter</h2>
+            <div class="how-to-steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h4>Enter Product Name</h4>
+                    <p>Type the product you're looking for in the search box (e.g., "iPad Pro", "Coffee Maker")</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h4>Select Retailers</h4>
+                    <p>Choose which retailers you want to search. You can select specific ones or use "Select All"</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h4>Choose Search Type</h4>
+                    <p>Click "Search Selected Sites" for chosen retailers or "Search All Sites" for everything</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <h4>Browse Results</h4>
+                    <p>New tabs will open for each retailer's search results. Compare prices and make your choice!</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="search-section">
+            <div class="search-box">
+                <input 
+                    type="text" 
+                    id="searchInput" 
+                    class="search-input" 
+                    placeholder="Enter product name (e.g., iPad Pro, Nike Air Max, Coffee Maker)"
+                >
+            </div>
+            
+            <div class="examples">
+                <small>Try searching for:</small><br>
+                <button class="example-btn" onclick="setExample('iPad Pro')">iPad Pro</button>
+                <button class="example-btn" onclick="setExample('Nike Shoes')">Nike Shoes</button>
+                <button class="example-btn" onclick="setExample('Coffee Maker')">Coffee Maker</button>
+                <button class="example-btn" onclick="setExample('Wireless Headphones')">Wireless Headphones</button>
+                <button class="example-btn" onclick="setExample('Gaming Laptop')">Gaming Laptop</button>
+            </div>
+            
+            <div class="retailer-selection">
+                <h3>🏪 Select Retailers to Search</h3>
+                <div class="retailers-grid" id="retailersGrid">
+                    <!-- Retailers will be populated by JavaScript -->
+                </div>
+                <button class="select-all-btn" onclick="toggleSelectAll()">Select All</button>
+            </div>
+            
+            <div class="search-buttons">
+                <button id="searchSelectedBtn" class="search-btn search-selected">
+                    🎯 Search Selected Sites
+                </button>
+                <button id="searchAllBtn" class="search-btn search-all">
+                    🌐 Search All Sites
+                </button>
+            </div>
+        </div>
+        
+        <div id="messages"></div>
+        <div id="results"></div>
+    </div>
 
+    <script>
+        const retailers = [
+            { 
+                name: 'Amazon', 
+                url: 'https://www.amazon.com/s?k=PRODUCT_NAME',
+                id: 'amazon'
+            },
+            { 
+                name: 'eBay', 
+                url: 'https://www.ebay.com/sch/i.html?_nkw=PRODUCT_NAME',
+                id: 'ebay'
+            },
+            { 
+                name: 'Walmart', 
+                url: 'https://www.walmart.com/search?q=PRODUCT_NAME',
+                id: 'walmart'
+            },
+            { 
+                name: 'Best Buy', 
+                url: 'https://www.bestbuy.com/site/searchpage.jsp?st=PRODUCT_NAME',
+                id: 'bestbuy'
+            },
+            { 
+                name: 'Target', 
+                url: 'https://www.target.com/s?searchTerm=PRODUCT_NAME',
+                id: 'target'
+            },
+            { 
+                name: 'Newegg', 
+                url: 'https://www.newegg.com/p/pl?d=PRODUCT_NAME',
+                id: 'newegg'
+            },
+            { 
+                name: 'Home Depot', 
+                url: 'https://www.homedepot.com/s/PRODUCT_NAME',
+                id: 'homedepot'
+            },
+            { 
+                name: 'Costco Wholesale', 
+                url: 'https://www.costco.com/CatalogSearch?dept=All&keyword=PRODUCT_NAME',
+                id: 'costco'
+            },
+            { 
+                name: 'Temu', 
+                url: 'https://www.temu.com/search_result.html?search_key=PRODUCT_NAME',
+                id: 'temu'
+            },
+            { 
+                name: 'Shopee', 
+                url: 'https://shopee.com/search?keyword=PRODUCT_NAME',
+                id: 'shopee'
+            },
+            { 
+                name: 'PCHOME', 
+                url: 'https://ecshweb.pchome.com.tw/search/v3.3/?q=PRODUCT_NAME',
+                id: 'pchome'
+            }
+        ];
+        
+        let isSearching = false;
+        let allSelected = false;
+        
+        function initializeRetailers() {
+            const grid = document.getElementById('retailersGrid');
+            grid.innerHTML = '';
+            
+            retailers.forEach(retailer => {
+                const div = document.createElement('div');
+                div.className = 'retailer-checkbox';
+                div.innerHTML = `
+                    <input type="checkbox" id="${retailer.id}" name="retailers" value="${retailer.id}">
+                    <label for="${retailer.id}">${retailer.name}</label>
+                `;
+                
+                div.addEventListener('click', function(e) {
+                    if (e.target.type !== 'checkbox') {
+                        const checkbox = div.querySelector('input');
+                        checkbox.checked = !checkbox.checked;
+                    }
+                    updateRetailerSelection();
+                });
+                
+                grid.appendChild(div);
+            });
+        }
+        
+        function updateRetailerSelection() {
+            const checkboxes = document.querySelectorAll('input[name="retailers"]');
+            checkboxes.forEach(checkbox => {
+                const div = checkbox.closest('.retailer-checkbox');
+                if (checkbox.checked) {
+                    div.classList.add('selected');
+                } else {
+                    div.classList.remove('selected');
+                }
+            });
+            
+            const selectedCount = document.querySelectorAll('input[name="retailers"]:checked').length;
+            const searchSelectedBtn = document.getElementById('searchSelectedBtn');
+            
+            if (selectedCount === 0) {
+                searchSelectedBtn.textContent = '🎯 Search Selected Sites';
+                searchSelectedBtn.disabled = true;
+            } else {
+                searchSelectedBtn.textContent = `🎯 Search Selected Sites (${selectedCount})`;
+                searchSelectedBtn.disabled = false;
+            }
+        }
+        
+        function toggleSelectAll() {
+            const checkboxes = document.querySelectorAll('input[name="retailers"]');
+            const selectAllBtn = document.querySelector('.select-all-btn');
+            
+            allSelected = !allSelected;
+            
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = allSelected;
+            });
+            
+            selectAllBtn.textContent = allSelected ? 'Deselect All' : 'Select All';
+            updateRetailerSelection();
+        }
+        
+        function setExample(text) {
+            document.getElementById('searchInput').value = text;
+        }
+        
+        function showMessage(message, type = 'info') {
+            const messagesDiv = document.getElementById('messages');
+            const className = type === 'error' ? 'error' : 'success';
+            messagesDiv.innerHTML = `<div class="${className}">${message}</div>`;
+            
+            // Auto-hide success messages after 3 seconds
+            if (type === 'success') {
+                setTimeout(() => {
+                    messagesDiv.innerHTML = '';
+                }, 3000);
+            }
+        }
+        
+        function clearMessages() {
+            document.getElementById('messages').innerHTML = '';
+        }
+        
+        function showLoading(sitesCount) {
+            document.getElementById('results').innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <h3>Opening ${sitesCount} retailer tabs...</h3>
+                    <p>Please allow pop-ups for this site to work properly</p>
+                </div>
+            `;
+        }
+        
+        function showResults(openedSites, productName) {
+            const resultsHTML = `
+                <div class="results-section">
+                    <h3>🚀 Search Results for "${productName}"</h3>
+                    <div class="opened-tabs">
+                        ${openedSites.map(site => `
+                            <div class="tab-card opened">
+                                <div class="retailer-name">${site.name}</div>
+                                <div class="status">✓ Tab Opened</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('results').innerHTML = resultsHTML;
+        }
+        
+        function getSelectedRetailers() {
+            const selected = [];
+            const checkboxes = document.querySelectorAll('input[name="retailers"]:checked');
+            
+            checkboxes.forEach(checkbox => {
+                const retailer = retailers.find(r => r.id === checkbox.value);
+                if (retailer) {
+                    selected.push(retailer);
+                }
+            });
+            
+            return selected;
+        }
+        
+        function openRetailerTabs(retailerList, productName) {
+            const openedSites = [];
+            
+            retailerList.forEach((retailer, index) => {
+                setTimeout(() => {
+                    const url = retailer.url.replace('PRODUCT_NAME', encodeURIComponent(productName));
+                    const newWindow = window.open(url, '_blank');
+                    
+                    if (newWindow) {
+                        openedSites.push(retailer);
+                    }
+                    
+                    // Show results after all tabs are attempted
+                    if (index === retailerList.length - 1) {
+                        setTimeout(() => {
+                            if (openedSites.length > 0) {
+                                showResults(openedSites, productName);
+                                showMessage(`Successfully opened ${openedSites.length} retailer tabs!`, 'success');
+                            } else {
+                                showMessage('No tabs could be opened. Please check your pop-up settings.', 'error');
+                                document.getElementById('results').innerHTML = '';
+                            }
+                        }, 500);
+                    }
+                }, index * 300); // Stagger tab opening to avoid browser blocking
+            });
+        }
+        
+        function searchSelected() {
+            const productName = document.getElementById('searchInput').value.trim();
+            
+            if (!productName) {
+                showMessage('Please enter a product name', 'error');
+                return;
+            }
+            
+            const selectedRetailers = getSelectedRetailers();
+            
+            if (selectedRetailers.length === 0) {
+                showMessage('Please select at least one retailer', 'error');
+                return;
+            }
+            
+            if (isSearching) return;
+            
+            isSearching = true;
+            clearMessages();
+            showLoading(selectedRetailers.length);
+            
+            setTimeout(() => {
+                openRetailerTabs(selectedRetailers, productName);
+                isSearching = false;
+            }, 1000);
+        }
+        
+        function searchAll() {
+            const productName = document.getElementById('searchInput').value.trim();
+            
+            if (!productName) {
+                showMessage('Please enter a product name', 'error');
+                return;
+            }
+            
+            if (isSearching) return;
+            
+            isSearching = true;
+            clearMessages();
+            showLoading(retailers.length);
+            
+            setTimeout(() => {
+                openRetailerTabs(retailers, productName);
+                isSearching = false;
+            }, 1000);
+        }
+        
+        // Event listeners
+        document.getElementById('searchSelectedBtn').addEventListener('click', searchSelected);
+        document.getElementById('searchAllBtn').addEventListener('click', searchAll);
+        
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                const selectedCount = document.querySelectorAll('input[name="retailers"]:checked').length;
+                if (selectedCount > 0) {
+                    searchSelected();
+                } else {
+                    searchAll();
+                }
+            }
+        });
+        
+        // Initialize
+        initializeRetailers();
+        updateRetailerSelection();
+    </script>
+</body>
+</html>
